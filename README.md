@@ -1,5 +1,8 @@
 # Census Dataset Viewer
 
+## Demo the Solution
+Hosted here on GitHub: [Census Dataset Viewer](https://josephbooth.github.io/list-datasets-census-api/source/filter-datasets-api-census-gov.html)
+
 ## Overview
 
 The **Census Dataset Viewer** is a simple web-based tool that provides users with a way to easily filter and navigate the vast datasets available on the U.S. Census Bureau's API (`api.census.gov`). It addresses the challenge of browsing through thousands of datasets on the **[Census Data API page](https://api.census.gov/data.html)**, which can be overwhelming, especially when users are trying to find specific datasets. Instead of scrolling through long lists or relying on search (Ctrl+F), this tool enables efficient filtering and easy access to dataset details through `.html` and `.json` links.
