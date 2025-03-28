@@ -2,6 +2,7 @@
 
 ## Demo the Solution
 Hosted here on GitHub: [Census Dataset Viewer](https://josephbooth.github.io/list-datasets-census-api/source/filter-datasets-api-census-gov.html)
+Hosted here on GitHub: <a href="https://josephbooth.github.io/list-datasets-census-api/source/filter-datasets-api-census-gov.html" target="_blank">Census Dataset Viewer</a>
 
 ## Overview
 
