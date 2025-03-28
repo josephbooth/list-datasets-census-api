@@ -75,6 +75,10 @@ The Census Dataset Viewer does not have any external dependencies. It is built u
 - **HTML**
 - **CSS**
 - **JavaScript** (vanilla JS)
+- **lz-string** (for data compression)  
+  - CDN link: [https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js](https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js)
+
+This library is used to compress and decompress data before storing it in the browser's localStorage to ensure better performance and avoid exceeding storage limits.
 
 All the functionality is implemented in a single HTML file, making it lightweight and easy to integrate into any project.
 
