@@ -56,77 +56,107 @@
             text-decoration: underline;
         }
     </style>
-    <script>
-        async function fetchData() {
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
+<script>
+    // Function to fetch data from the Census API
+    async function fetchData() {
+        const cachedData = localStorage.getItem('censusData');
+        const cacheTimestamp = localStorage.getItem('cacheTimestamp');
+        const currentTime = Date.now();
+
+        // Check if cached data is available and not expired (24 hours expiry)
+        if (cachedData && cacheTimestamp && (currentTime - cacheTimestamp < 24 * 60 * 60 * 1000)) {
+            const decompressedData = LZString.decompressFromUTF16(cachedData);
+            const data = JSON.parse(decompressedData);
+            displayData(data.dataset);
+            console.log("Using cached data");
+        } else {
             try {
+                // Fetch new data from API
                 const response = await fetch('https://api.census.gov/data.json');
                 const data = await response.json();
+
+                // Compress the data and store it in localStorage
+                const compressedData = LZString.compressToUTF16(JSON.stringify(data));
+                localStorage.setItem('censusData', compressedData);
+                localStorage.setItem('cacheTimestamp', currentTime.toString());
+
+                // Display the fetched data
                 displayData(data.dataset);
+                console.log("Using fresh data from API");
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
         }
+    }
 
-        function displayData(datasets) {
-            const tableBody = document.getElementById('dataBody');
-            tableBody.innerHTML = '';
-            datasets.forEach(dataset => {
-                const apiLink = dataset.distribution[0].accessURL;
-                const htmlLink = apiLink.replace('.json', '.html');
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${dataset.c_vintage || 'N/A'}</td>
-                    <td>${dataset.title}</td>
-                    <td>${dataset.c_dataset ? dataset.c_dataset.join(', ') : 'N/A'}</td>
-					<td><a href="${htmlLink}.html" target="_blank">Read Details</a></td>
-                    <td><a href="${apiLink}.json" target="_blank">Open .json</a></td>
-                `;
-                tableBody.appendChild(row);
-            });
-        }
+    // Function to display the data in the table
+    function displayData(datasets) {
+        const tableBody = document.getElementById('dataBody');
+        tableBody.innerHTML = ''; // Clear any existing content
+        datasets.forEach(dataset => {
+            const apiLink = dataset.distribution[0].accessURL;
+            const htmlLink = apiLink.replace('.json', '.html');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${dataset.c_vintage || 'N/A'}</td>
+                <td>${dataset.title}</td>
+                <td>${dataset.c_dataset ? dataset.c_dataset.join(', ') : 'N/A'}</td>
+                <td><a href="${htmlLink}.html" target="_blank">Read Details</a></td>
+                <td><a href="${apiLink}.json" target="_blank">Open .json</a></td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
 
-        function filterData() {
-            const yearFilter = document.getElementById('yearFilter').value.toLowerCase();
-            const titleFilter = document.getElementById('titleFilter').value.toLowerCase();
-            const datasetFilter = document.getElementById('datasetFilter').value.toLowerCase();
-            const rows = document.querySelectorAll('#dataBody tr');
+    // Function to filter data based on user input
+    function filterData() {
+        const yearFilter = document.getElementById('yearFilter').value.toLowerCase();
+        const titleFilter = document.getElementById('titleFilter').value.toLowerCase();
+        const datasetFilter = document.getElementById('datasetFilter').value.toLowerCase();
+        const rows = document.querySelectorAll('#dataBody tr');
 
-            rows.forEach(row => {
-                const year = row.children[0].textContent.toLowerCase();
-                const title = row.children[1].textContent.toLowerCase();
-                const dataset = row.children[2].textContent.toLowerCase();
-                if (year.includes(yearFilter) && title.includes(titleFilter) && dataset.includes(datasetFilter)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        }
+        rows.forEach(row => {
+            const year = row.children[0].textContent.toLowerCase();
+            const title = row.children[1].textContent.toLowerCase();
+            const dataset = row.children[2].textContent.toLowerCase();
+            if (year.includes(yearFilter) && title.includes(titleFilter) && dataset.includes(datasetFilter)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
 
-        window.onload = fetchData;
-    </script>
+    // Load data when the window loads
+    window.onload = fetchData;
+</script>
 </head>
 <body>
     <h2>Census Data Viewer</h2>
     <section id="filters">
-    <label for="datasetFilter">Filter by Dataset:</label>
-    <input type="text" id="datasetFilter" oninput="filterData()" placeholder="e.g. acs1">
-    <label for="yearFilter">Filter by Year:</label>
-    <input type="text" id="yearFilter" oninput="filterData()" placeholder="e.g. 2022">
-    <label for="titleFilter">Filter by Title:</label>
-    <input type="text" id="titleFilter" oninput="filterData()" placeholder="e.g. acs">
+        <label for="datasetFilter">Filter by Dataset:</label>
+        <input type="text" id="datasetFilter" oninput="filterData()" placeholder="e.g. acs1">
+        
+        <label for="yearFilter">Filter by Year:</label>
+        <input type="text" id="yearFilter" oninput="filterData()" placeholder="e.g. 2022">
+        
+        <label for="titleFilter">Filter by Title:</label>
+        <input type="text" id="titleFilter" oninput="filterData()" placeholder="e.g. acs">
     </section>
+
     <table border="1">
         <thead>
             <tr>
                 <th>Vintage (Year)</th>
                 <th>Title</th>
                 <th>Dataset</th>
-				        <th>Dataset Details</th>
+                <th>Dataset Details</th>
                 <th>API Endpoint</th>
             </tr>
         </thead>
         <tbody id="dataBody"></tbody>
     </table>
 </body>
+
 </html>
