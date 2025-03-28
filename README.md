@@ -57,7 +57,7 @@ This approach drastically improves the usability and efficiency of working with 
 To use the Census Dataset Viewer, follow these steps:
 
 1. **Clone or Download the Repository**: 
-   - Clone the repository using `git clone <repository-url>` or download the ZIP file from GitHub.
+   - Clone the repository using `git clone https://github.com/josephbooth/list-datasets-census-api.git` or download the ZIP file from GitHub.
    
 2. **Open the HTML File**:
    - Open the `filter-datasets-api-census-gov.html` file in any modern web browser (e.g., Chrome, Firefox, Edge, Safari).
